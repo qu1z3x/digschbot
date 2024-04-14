@@ -5,7 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"start": "nodemon ./index.js && nodemon ./tgterminal.js && nodemon ./sheets.js",
-		"start2": "nodemon ./index.js && nodemon ./tgterminal.js && nodemon ./sheets.js && nodemon ./sheets.js && nodemon ./sport.js",
+		"start2": "nodemon ./index.js && nodemon ./tgterminal.js && nodemon ./sheets.js && nodemon ./sportterminal.js && nodemon ./sport.js",
 		"bashCom": "npm i --save node-cron && npm i --save node-telegram-bot-api && npm i --save nodemon -g && npm i --save googleapis && npm i --save firebase"
 	},
 	"author": "",
