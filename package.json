@@ -1,0 +1,21 @@
+{
+	"name": "digschbot",
+	"type": "module",
+	"version": "1.0.0",
+	"main": "index.js",
+	"scripts": {
+		"start": "nodemon ./index.js && nodemon ./tgterminal.js && nodemon ./sheets.js",
+		"start2": "node ./index.js && node ./tgterminal.js && node ./sheets.js"
+	},
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"firebase": "^10.7.0",
+		"googleapis": "^129.0.0",
+		"node-cron": "^3.0.3",
+		"node-telegram-bot-api": "^0.63.0",
+		"nodemon": "^3.0.1",
+		"save": "^2.9.0"
+	},
+	"description": ""
+}
