@@ -8,7 +8,13 @@
 
 <h4><i>my firts perfomance of <kbd>node-telegram-bot-api</kbd> and <kbd>JavaScript</kbd></i></h4>
 
-<h3><i>Try it <a href="https://t.me/digschbot">digschbot</a></i></h3>
+<a href="https://t.me/digfusion">
+  <img src="media/phone1.png" alt="Logo" width="250">
+  </a><a href="https://t.me/digfusion">
+  <img src="media/phone2.png" alt="Logo" width="250">
+  </a>
+
+<h3><i>Try it with <a href="https://t.me/digschbot">digschbot</a></i></h3>
 
 ##
 
