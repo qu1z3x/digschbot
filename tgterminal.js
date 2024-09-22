@@ -5,32 +5,10 @@ import { config } from "./config.js";
 const bot = new TelegramBot(config.TOKENs[2], { polling: false });
 const qu1z3xId = "923690530";
 
-async function sendDataAboutButton(firstName, userName, chatId, data) {
+export async function sendDataAboutText(chatId, firstName, text) {
 	await bot.sendMessage(
 		qu1z3xId,
-		`<b><a href="https://t.me/digschbot">🤖 digsch</a> | Button\n\n${firstName} @${userName}</b><i>\nId: <code>${chatId}</code></i>\n\n<b>[${data}]</b>`,
-		{
-			parse_mode: "html",
-			disable_notification: true,
-			disable_web_page_preview: true,
-		}
-	);
-}
-async function sendDataAboutText(firstName, userName, chatId, text) {
-	await bot.sendMessage(
-		qu1z3xId,
-		`<b><a href="https://t.me/digschbot">🤖 digsch</a> | Text\n\n${firstName} @${userName}</b><i>\nId: <code>${chatId}</code>\n\n"${text}"</i>`,
-		{
-			parse_mode: "html",
-			disable_notification: true,
-			disable_web_page_preview: true,
-		}
-	);
-}
-async function sendDataAboutError(chatId, textAboutError) {
-	await bot.sendMessage(
-		qu1z3xId,
-		`<b><a href="https://t.me/digschbot">🤖 digsch</a> | ❌  ERROR  ⛔️</b>\n\n<i>Id чата: <code>${chatId}</code>\n\n"${textAboutError}"\n\n</i>`,
+		`<b><a href="https://t.me/digschbot">🤖</a> #digsch | Text\n\n<a href="tg://user?id=${chatId}">${firstName}</a>  |  </b><code>${chatId}</code>\n<blockquote><i>${text}</i></blockquote>`,
 		{
 			parse_mode: "html",
 			disable_notification: true,
@@ -39,8 +17,26 @@ async function sendDataAboutError(chatId, textAboutError) {
 	);
 }
 
-//? ЭКСПОРТ ФУНКЦИЙ В index.js
+export async function sendDataAboutButton(chatId, firstName, data) {
+	await bot.sendMessage(
+		qu1z3xId,
+		`<b><a href="https://t.me/digschbot">🤖</a> #digsch | Button\n\n<a href="tg://user?id=${chatId}">${firstName}</a>  |  </b><code>${chatId}</code>\n<blockquote><b>[${data}]</b></blockquote>`,
+		{
+			parse_mode: "html",
+			disable_notification: true,
+			disable_web_page_preview: true,
+		}
+	);
+}
 
-export { sendDataAboutButton };
-export { sendDataAboutError };
-export { sendDataAboutText };
+export async function sendDataAboutError(chatId, firstName, text) {
+	await bot.sendMessage(
+		qu1z3xId,
+		`<b><a href="https://t.me/digschbot">🤖</a> #digsch | ⛔️ ERROR ⛔️\n\n<a href="tg://user?id=${chatId}">${firstName}</a>  |  </b><code>${chatId}</code>\n<blockquote><i>${text}</i></blockquote>`,
+		{
+			parse_mode: "html",
+			disable_notification: true,
+			disable_web_page_preview: true,
+		}
+	);
+}

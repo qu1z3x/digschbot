@@ -11,7 +11,6 @@ import {
 import { config } from "./config.js";
 
 import {
-	updateSheetsData,
 	foodmenu27c1,
 	foodmenu27c2,
 	class10a,
@@ -34,8 +33,8 @@ let BotName = "digschbot";
 //? МАССИВЫ ДАННЫХ
 
 let usersData = []; // информация о пользователях
-let remindersData = []; // существующие заметки
-let diningRoomData = []; // прочие данные
+let remindersData = []; // существующие напоминания
+let diningRoomData = []; // отзывы о еде в столовой
 
 // Приветственные стикеры
 
@@ -106,26 +105,23 @@ const monthNamesSHORT = [
 ];
 
 const timesOnLesson = [
-	"08:30",
-	"09:25",
-	"10:25",
-	"11:25",
-	"12:20",
-	"13:15",
-	"14:10",
-	"15:05",
-	"16:00",
+	"08:15", // 1-й урок
+	"09:10", // 2-й урок
+	"10:05", // 3-й урок
+	"10:50", // 4-й урок
+	"11:45", // 5-й урок
+	"12:45", // 6-й урок
+	"13:30", // 7-й урок
 ];
+
 const timesOnBreak = [
-	"09:10",
-	"10:05",
-	"11:05",
-	"12:05",
-	"13:00",
-	"13:55",
-	"14:50",
-	"15:45",
-	"16:40",
+	"08:55", // Перемена после 1-го урока
+	"09:50", // Перемена после 2-го урока
+	"10:45", // Перемена после 3-го урока
+	"11:30", // Перемена после 4-го урока
+	"12:25", // Перемена после 5-го урока
+	"13:25", // Перемена после 6-го урока
+	"14:10", // Перемена после 7-го урока
 ];
 
 let textToSayHello = "",
@@ -227,9 +223,7 @@ async function menuHome(chatId, exit = true) {
 							[
 								{
 									text: `${
-										chatId == qu1z3xId || chatId == stepanovId
-											? "💠 Управление 💠"
-											: ""
+										chatId == qu1z3xId ? "💠 Управление 💠" : ""
 									}`,
 									callback_data: "adminMenu",
 								},
@@ -274,9 +268,7 @@ async function menuHome(chatId, exit = true) {
 							[
 								{
 									text: `${
-										chatId == qu1z3xId || chatId == stepanovId
-											? "💠 Управление 💠"
-											: ""
+										chatId == qu1z3xId ? "💠 Управление 💠" : ""
 									}`,
 									callback_data: "adminMenu",
 								},
@@ -290,12 +282,12 @@ async function menuHome(chatId, exit = true) {
 		}
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
 async function rulesBot(chatId, RulesToStart = true) {
-	let rulesText = `<i>🤖 Правила пользования 📃</i>\n\n❗ЭТО ОЧЕНЬ ВАЖНО <a href = "https://t.me/${BotName}/?start=minidetail6">❗</a>\n\n-  Обязательно ознакомься с <a href = "https://t.me/${BotName}/?start=showhi2">Что умеет этот чат-бот?</a>\n\n-  Пользоваться приложением строго в благих целях🌍\n\n-  Не совершать намеренные нарушения правил, или создание сбоев❌\n\n-  Бот не отвечает - команда /restart в твоем распоряжении!😉\n\n-  Нашлась ошибка? Бот по-прежнему не отвечает? Есть замечания по работе проекта? - пожалуйста, сообщи об этом автору @qu1z3x 👍\n\n-  Также принимая правила, ты разрешаешь использование личных данных, полученных в рамках школьного бота (т.е. полученные мной) 😉🔒`;
+	let rulesText = `<i>🤖 Правила пользования 📃</i>\n\n❗ЭТО ОЧЕНЬ ВАЖНО <a href = "https://t.me/${BotName}/?start=minidetail6">❗</a>\n\n-  Обязательно ознакомься с <a href = "https://t.me/${BotName}/?start=showhi2">Что умеет этот чат-бот?</a>\n\n-  Пользоваться приложением строго в благих целях🌍\n\n-  Не совершать намеренные нарушения правил, или создание сбоев❌\n\n-  Бот не отвечает - команда /restart в твоем распоряжении!😉\n\n-  Нашлась ошибка? Бот по-прежнему не отвечает? Есть замечания по работе проекта? - пожалуйста, сообщи об этом автору @digfusionsupport 👍\n\n-  Также принимая правила, ты разрешаешь использование личных данных, полученных в рамках школьного бота (т.е. полученные мной) 😉🔒`;
 
 	if (RulesToStart) {
 		try {
@@ -317,7 +309,7 @@ async function rulesBot(chatId, RulesToStart = true) {
 			});
 		} catch (error) {
 			console.log(error);
-			sendDataAboutError(chatId, `${String(error)}`);
+			sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 			bot.sendMessage(
 				chatId,
 				`<b>Сверху ничего не было 🙈\n\n${rulesText}</b>`,
@@ -334,7 +326,7 @@ async function rulesBot(chatId, RulesToStart = true) {
 					},
 				}
 			);
-			sendDataAboutError(chatId, `${String(error)}`);
+			sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 		}
 	} else if (!RulesToStart) {
 		try {
@@ -358,7 +350,7 @@ async function rulesBot(chatId, RulesToStart = true) {
 			});
 		} catch (error) {
 			console.log(error);
-			sendDataAboutError(chatId, `${String(error)}`);
+			sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 		}
 	}
 }
@@ -498,7 +490,7 @@ async function ChoosingClass(chatId, start = 1) {
 		}
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -546,7 +538,7 @@ async function Raspisanie(chatId) {
 		);
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -786,7 +778,7 @@ async function RaspisanieText(
 		}
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -837,8 +829,10 @@ async function allSubjectsCount(chatId) {
 			let text = "";
 			let i = 1;
 			sortedSubjects.forEach(([subject, count]) => {
-				text += `<b>${i}. </b> ${subject}: <b>${count}шт</b>\n`;
-				i++;
+				if (subject != "") {
+					text += `<b>${i}. </b> ${subject}: <b>${count}шт</b>\n`;
+					i++;
+				}
 			});
 
 			bot.editMessageText(
@@ -885,7 +879,7 @@ async function allSubjectsCount(chatId) {
 		}
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -893,7 +887,7 @@ async function netClassaText(chatId, exitMenu = true) {
 	try {
 		if (exitMenu) {
 			await bot.editMessageText(
-				`*Грустно это осознавать, но видимо именно твой класс не входит в список программы _"Цифровые классы"_ 🫤\n\nНо\\! Ты всегда можешь написать @qu1z3x, и уточнить все свои потребности\\! 😉*`,
+				`*Грустно это осознавать, но видимо именно твой класс не входит в список программы _"Цифровые классы"_ 🫤\n\nНо\\! Ты всегда можешь написать @digfusionsupport, и уточнить все свои потребности\\! 😉*`,
 				{
 					parse_mode: "MarkdownV2",
 					chat_id: chatId,
@@ -915,7 +909,7 @@ async function netClassaText(chatId, exitMenu = true) {
 			);
 		} else if (!exitMenu) {
 			await bot.editMessageText(
-				`*Грустно это осознавать, но видимо именно твой класс не входит в список программы _"Цифровые классы"_ 🫤\n\nНо\\! Ты всегда можешь написать @qu1z3x, и уточнить все свои потребности\\! 😉*`,
+				`*Грустно это осознавать, но видимо именно твой класс не входит в список программы _"Цифровые классы"_ 🫤\n\nНо\\! Ты всегда можешь написать @digfusionsupport, и уточнить все свои потребности\\! 😉*`,
 				{
 					parse_mode: "MarkdownV2",
 					chat_id: chatId,
@@ -937,7 +931,7 @@ async function netClassaText(chatId, exitMenu = true) {
 		}
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -1072,7 +1066,7 @@ async function foodMenu(
 		}
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -1134,7 +1128,11 @@ async function Calls(
 			// определение времени начала уроков
 
 			let startTime = "";
-			if (classArr && classArr[dataAboutUser.weekday - 1].length > 0) {
+			if (
+				classArr &&
+				classArr[dataAboutUser.weekday - 1] &&
+				classArr[dataAboutUser.weekday - 1].length > 0
+			) {
 				if (
 					classArr[dataAboutUser.weekday - 1].find(
 						(className) => className !== ""
@@ -1205,11 +1203,11 @@ async function Calls(
 								classArr[dataAboutUser.weekday - 1][0] &&
 								classArr[dataAboutUser.weekday - 1][0] !== ""
 									? `\n - ${
-											dateNowHHMM >= 830 &&
-											dateNowHHMM < 910 &&
+											dateNowHHMM >= 815 &&
+											dateNowHHMM < 855 &&
 											dataAboutUser.weekday == dayW
-												? "<u><b>1</b> урок <b>08:30 - 09:10</b></u>"
-												: "<b>1</b> урок <b>08:30 - 09:10</b>"
+												? "<u><b>1</b> урок <b>08:15 - 08:55</b></u>"
+												: "<b>1</b> урок <b>08:15 - 08:55</b>"
 									  }\n`
 									: ""
 						  }${
@@ -1217,10 +1215,10 @@ async function Calls(
 								classArr[dataAboutUser.weekday - 1][1] !== ""
 									? `\n - ${
 											dateNowHHMM >= 910 &&
-											dateNowHHMM < 1005 &&
+											dateNowHHMM < 950 &&
 											dataAboutUser.weekday == dayW
-												? "<u><b>2</b> урок <b>09:25 - 10:05</b></u>"
-												: "<b>2</b> урок <b>09:25 - 10:05</b>"
+												? "<u><b>2</b> урок <b>09:10 - 09:50</b></u>"
+												: "<b>2</b> урок <b>09:10 - 09:50</b>"
 									  }\n`
 									: ""
 						  }${
@@ -1228,76 +1226,54 @@ async function Calls(
 								classArr[dataAboutUser.weekday - 1][2] !== ""
 									? `\n - ${
 											dateNowHHMM >= 1005 &&
-											dateNowHHMM < 1105 &&
+											dateNowHHMM < 1045 &&
 											dataAboutUser.weekday == dayW
-												? "<u><b>3</b> урок <b>10:25 - 11:05</b></u>"
-												: "<b>3</b> урок <b>10:25 - 11:05</b>"
+												? "<u><b>3</b> урок <b>10:05 - 10:45</b></u>"
+												: "<b>3</b> урок <b>10:05 - 10:45</b>"
 									  }\n`
 									: ""
 						  }${
 								classArr[dataAboutUser.weekday - 1][3] &&
 								classArr[dataAboutUser.weekday - 1][3] !== ""
 									? `\n - ${
-											dateNowHHMM >= 1105 &&
-											dateNowHHMM < 1205 &&
+											dateNowHHMM >= 1050 &&
+											dateNowHHMM < 1130 &&
 											dataAboutUser.weekday == dayW
-												? "<u><b>4</b> урок <b>11:25 - 12:05</b></u>"
-												: "<b>4</b> урок <b>11:25 - 12:05</b>"
+												? "<u><b>4</b> урок <b>10:50 - 11:30</b></u>"
+												: "<b>4</b> урок <b>10:50 - 11:30</b>"
 									  }\n`
 									: ""
 						  }${
 								classArr[dataAboutUser.weekday - 1][4] &&
 								classArr[dataAboutUser.weekday - 1][4] !== ""
 									? `\n - ${
-											dateNowHHMM >= 1205 &&
-											dateNowHHMM < 1300 &&
+											dateNowHHMM >= 1145 &&
+											dateNowHHMM < 1225 &&
 											dataAboutUser.weekday == dayW
-												? "<u><b>5</b> урок <b>12:20 - 13:00</b></u>"
-												: "<b>5</b> урок <b>12:20 - 13:00</b>"
+												? "<u><b>5</b> урок <b>11:45 - 12:25</b></u>"
+												: "<b>5</b> урок <b>11:45 - 12:25</b>"
 									  }\n`
 									: ""
 						  }${
 								classArr[dataAboutUser.weekday - 1][5] &&
 								classArr[dataAboutUser.weekday - 1][5] !== ""
 									? `\n - ${
-											dateNowHHMM >= 1300 &&
-											dateNowHHMM < 1355 &&
+											dateNowHHMM >= 1245 &&
+											dateNowHHMM < 1325 &&
 											dataAboutUser.weekday == dayW
-												? "<u><b>6</b> урок <b>13:15 - 13:55</b></u>"
-												: "<b>6</b> урок <b>13:15 - 13:55</b>"
+												? "<u><b>6</b> урок <b>12:45 - 13:25</b></u>"
+												: "<b>6</b> урок <b>12:45 - 13:25</b>"
 									  }\n`
 									: ""
 						  }${
 								classArr[dataAboutUser.weekday - 1][6] &&
 								classArr[dataAboutUser.weekday - 1][6] !== ""
 									? `\n - ${
-											dateNowHHMM >= 1355 &&
-											dateNowHHMM < 1450 &&
+											dateNowHHMM >= 1330 &&
+											dateNowHHMM < 1410 &&
 											dataAboutUser.weekday == dayW
-												? "<u><b>7</b> урок <b>14:10 - 14:50</b></u>"
-												: "<b>7</b> урок <b>14:10 - 14:50</b>"
-									  }\n`
-									: ""
-						  }${
-								classArr[dataAboutUser.weekday - 1][7] &&
-								classArr[dataAboutUser.weekday - 1][7] !== ""
-									? `\n - ${
-											dateNowHHMM >= 1450 &&
-											dateNowHHMM < 1545 &&
-											dataAboutUser.weekday == dayW
-												? "<u><b>8</b> урок <b>15:05 - 15:45</b></u>"
-												: "<b>8</b> урок <b>15:05 - 15:45</b>"
-									  }\n`
-									: ""
-						  }${
-								classArr[dataAboutUser.weekday - 1][8] &&
-								classArr[dataAboutUser.weekday - 1][8] !== ""
-									? `\n - ${
-											dateNowHHMM >= 1545 &&
-											dateNowHHMM < 1640 &&
-											dataAboutUser.weekday == dayW
-												? "<u><b>9</b> урок <b>16:00 - 16:40</b></u>"
-												: "<b>9</b> урок <b>16:00 - 16:40</b>"
+												? "<u><b>7</b> урок <b>13:30 - 14:10</b></u>"
+												: "<b>7</b> урок <b>13:30 - 14:10</b>"
 									  }\n`
 									: ""
 						  }\n<i>Домой в <b>${endTime}</b></i>\n\n<b><a href= "https://t.me/${BotName}/?start=raspisanieon${
@@ -1314,10 +1290,7 @@ async function Calls(
 					reply_markup: {
 						inline_keyboard: [
 							[
-								{
-									text: "⬅️",
-									callback_data: "previousweekdaycalls",
-								},
+								{ text: "⬅️", callback_data: "previousweekdaycalls" },
 								{
 									text: `${
 										dataAboutUser.weekday == dayW
@@ -1326,10 +1299,7 @@ async function Calls(
 									}`,
 									callback_data: "todaycalls",
 								},
-								{
-									text: "➡️",
-									callback_data: "nextweekdaycalls",
-								},
+								{ text: "➡️", callback_data: "nextweekdaycalls" },
 							],
 							[
 								{ text: "⬅️В меню", callback_data: "exit" },
@@ -1347,7 +1317,7 @@ async function Calls(
 		}
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -1535,7 +1505,7 @@ async function NotificationsMenuCalls(
 		);
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -1604,7 +1574,7 @@ async function Games(chatId) {
 		);
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -1649,7 +1619,7 @@ async function game1(chatId, startGame = true) {
 		);
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -1675,7 +1645,7 @@ async function game2(chatId) {
 		);
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -1765,7 +1735,7 @@ async function game2_2(chatId, playerNum) {
 		}
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -1878,7 +1848,7 @@ async function game3(chatId) {
 		);
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -1924,7 +1894,7 @@ async function game3_2(chatId) {
 		);
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -1977,7 +1947,7 @@ function game3Result(chatId, gameIsDraw = false) {
 		return null;
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 		return null;
 	}
 }
@@ -2012,7 +1982,7 @@ function game3InlineKeyboard(chatId, isPlayer = true) {
 		return { inline_keyboard: buttons };
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -2067,7 +2037,7 @@ function checkUsersActivity() {
 		}
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -2102,7 +2072,7 @@ function sendNotificationForReturn(chatId) {
 		});
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -2134,7 +2104,7 @@ async function News(chatId, newsNum, newsName) {
 
 	try {
 		await bot.editMessageText(
-			`<b><i>❗ Интересное | ${newsName}</i></b>\n\n${newsText[newsNum]}\n\n<b>• По любым вопросам к @qu1z3x</b>`,
+			`<b><i>❗ Интересное | ${newsName}</i></b>\n\n${newsText[newsNum]}\n\n<b>• По любым вопросам к @digfusionsupport</b>`,
 			{
 				parse_mode: "html",
 				chat_id: chatId,
@@ -2154,7 +2124,7 @@ async function News(chatId, newsNum, newsName) {
 		);
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -2184,7 +2154,7 @@ async function allNewsTextEdit(chatId) {
 		);
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -2216,7 +2186,7 @@ async function allNewsTextEdit_2(chatId, text) {
 		);
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -2243,7 +2213,7 @@ async function AllNewsTextReset(chatId) {
 		);
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -2438,7 +2408,7 @@ async function Settings(chatId) {
 		);
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -2491,7 +2461,7 @@ async function Settings_2(chatId) {
 		);
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -2570,7 +2540,7 @@ async function editFistName(chatId, after) {
 		);
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -2612,7 +2582,7 @@ async function adminMenu(chatId) {
 		);
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -2637,7 +2607,7 @@ async function adminMenuSendMessage(chatId) {
 		);
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -2663,10 +2633,7 @@ async function adminMenuSendMessage_2(chatId, recipient) {
 			}
 		);
 		for (let i = 0; i < usersData.length; i++) {
-			if (
-				usersData[i].chatId != qu1z3xId &&
-				usersData[i].chatId != stepanovId
-			) {
+			if (usersData[i].chatId != qu1z3xId) {
 				bot.sendMessage(
 					usersData[i].chatId,
 					`<b><i>${paragrafs[numberArr]}</i>\n\n${textMessageForAllUsers}</b>`,
@@ -2692,7 +2659,7 @@ async function adminMenuSendMessage_2(chatId, recipient) {
 		}
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -2762,7 +2729,7 @@ async function adminMenuSendMessageSettings(chatId) {
 		);
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -2821,7 +2788,7 @@ async function adminMenuEdit(chatId) {
 		);
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -2850,9 +2817,7 @@ async function registryUsersData(chatId, listNum) {
 						? `<a href="https://t.me/${BotName}/?start=deletefromblacklistuser${usersData[i].chatId}">❌</a>`
 						: ``
 				} @${usersData[i].username}${
-					usersData[i].chatId != qu1z3xId &&
-					usersData[i].chatId != stepanovId &&
-					!usersData[i].inBlackList
+					usersData[i].chatId != qu1z3xId && !usersData[i].inBlackList
 						? `${
 								!usersData[i].inBlackList
 									? `<a href="https://t.me/${BotName}/?start=addtoblacklistuser${usersData[i].chatId}"> - забанить ❌</a>`
@@ -2914,7 +2879,7 @@ async function registryUsersData(chatId, listNum) {
 		}
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -2973,7 +2938,7 @@ async function usersBlacklist(chatId) {
 		);
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -2999,7 +2964,7 @@ async function addInBlacklist(chatId) {
 		);
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -3067,7 +3032,7 @@ async function addInBlacklist_2(chatId, chatIdForBlacklist) {
 		);
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -3097,7 +3062,7 @@ async function addInBlacklistEnd(chatId) {
 		].inBlackList = true;
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -3127,7 +3092,7 @@ async function Reminders(chatId) {
 		);
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -3182,7 +3147,7 @@ async function RemindersList(chatId) {
 		);
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -3220,7 +3185,7 @@ async function remindersAdd(chatId) {
 		);
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -3297,7 +3262,7 @@ async function start(
 		}
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -3310,7 +3275,7 @@ async function deleteAllMessages(chatId) {
 		bot.deleteMessage(chatId, dataAboutUser.messageIdSayHi2);
 		bot.deleteMessage(chatId, dataAboutUser.messageId);
 	} catch (error) {
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -3493,7 +3458,7 @@ async function miniDetails(chatId, numberOfDetail) {
 		}
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
@@ -3753,7 +3718,7 @@ async function StartAll() {
 				}
 			} catch (error) {
 				console.log(error);
-				sendDataAboutError(chatId, `${String(error)}`);
+				sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 			}
 		});
 
@@ -3804,7 +3769,7 @@ async function StartAll() {
 			try {
 				const chatId = message.chat.id;
 				if (
-					(chatId == qu1z3xId || chatId == stepanovId) &&
+					chatId == qu1z3xId &&
 					dataAboutUser &&
 					dataAboutUser.userAction == "adminMenuSendMessage"
 				) {
@@ -3821,7 +3786,6 @@ async function StartAll() {
 				} else if (
 					dataAboutUser.userAction == "addInBlacklist" &&
 					dataAboutUser &&
-					match[1] != stepanovId &&
 					match[1] != qu1z3xId
 				) {
 					if (usersData.find((obj) => obj.chatId == match[1])) {
@@ -3831,7 +3795,7 @@ async function StartAll() {
 				}
 			} catch (error) {
 				console.log(error);
-				sendDataAboutError(chatId, `${String(error)}`);
+				sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 			}
 		});
 
@@ -3850,7 +3814,11 @@ async function StartAll() {
 					formatIsNice = true;
 				} catch (error) {
 					console.log(error);
-					sendDataAboutError(chatId, `${String(error)}`);
+					sendDataAboutError(
+						chatId,
+						dataAboutUser.login,
+						`${String(error)}`
+					);
 					formatIsNice = false;
 				}
 
@@ -3944,368 +3912,344 @@ async function StartAll() {
 					}
 				} catch (error) {
 					console.log(error);
-					sendDataAboutError(chatId, `${String(error)}`);
+					sendDataAboutError(
+						chatId,
+						dataAboutUser.login,
+						`${String(error)}`
+					);
 				}
 			}
 		});
 
-		bot.onText(/(.+)/, async (message, match) => {});
-
-		bot.on("message", async (message) => {
+		bot.on("text", async (message) => {
 			const chatId = message.chat.id;
 			const text = message.text;
-			let firstName = message.from.first_name;
 
-			try {
-				const dataAboutUser = usersData.find((obj) => obj.chatId == chatId);
+			if (!usersData.find((obj) => obj.chatId == chatId)) {
+				usersData.push({
+					chatId: chatId,
+					inBlackList: false,
+					username: message.from.username,
+					login: message.from.first_name,
+					telegramFirstName: message.from.first_name,
+					userStatus:
+						chatId == qu1z3xId ? "Администратор 👑" : "Ученик 🧑‍🏫",
+					userAction: 0,
+					countOfActions: 1,
+					lastActivity: Date.now(),
+					dateOfRegistration: `${new Date()
+						.getDate()
+						.toString()
+						.padStart(2, "0")}.${(new Date().getMonth() + 1)
+						.toString()
+						.padStart(2, "0")}.${(new Date().getFullYear() % 100)
+						.toString()
+						.padStart(2, "0")}`,
+					schoolName: "",
+					className: "Не определен",
+					messageId: "",
+					messageIdSayHi0: "",
+					messageIdSayHi1: "",
+					messageIdSayHi2: "",
+					weekday: "",
+					// calls
+					callOnLesson: false,
+					callOnLessonIn5minutes: false,
+					callOnLessonIn10minutes: false,
+					callOnBreak: false,
+					callOnBreakIn5minutes: false,
+					callOnBreakIn10minutes: false,
+					// game1
+					game1NiceResults: 0,
+					game1BadResults: 0,
+					// game2
+					game2NiceResults: 0,
+					game2BadResults: 0,
+					game2DrawResults: 0,
+					// game3
+					game3NiceResults: 0,
+					game3BadResults: 0,
+					game3DrawResults: 0,
+					game3Difficulty: 3,
+					game3PlayerSticker: "",
+					playerGame3Board: [
+						[" ", " ", " "],
+						[" ", " ", " "],
+						[" ", " ", " "],
+					],
+					// mini details
+					miniDetail666: 0,
+					miniDetail0: 0,
+					miniDetail1: 0,
+					miniDetail2: 0,
+					miniDetail3: 0,
+					miniDetail4: 0,
+					miniDetail5: 0,
+					miniDetail6: 0,
+					miniDetail7: 0,
+					miniDetail8: 0,
+					miniDetail9: 0,
+					// reminders for return
+					remindersForReturnIsActive: true,
+					reminderForReturn1: false,
+					reminderForReturn2: false,
+					reminderForReturn3: false,
+					reminderForReturn4: false,
+				});
+			}
 
-				let dataAboutDining;
+			const dataAboutUser = usersData.find((obj) => obj.chatId == chatId);
 
-				if (dataAboutUser) {
-					dataAboutDining = diningRoomData.find(
-						(obj) =>
-							obj.botName == BotName &&
-							obj.weekdayMenu == dataAboutUser.weekday
-					);
-				}
+			if (dataAboutUser) {
+				const dataAboutDining = diningRoomData.find(
+					(obj) =>
+						obj.botName == BotName &&
+						obj.weekdayMenu == dataAboutUser.weekday
+				);
 
-				if (!dataAboutUser) {
-					usersData.push({
-						chatId: chatId,
-						inBlackList: false,
-						username: message.from.username,
-						login: message.from.first_name,
-						telegramFirstName: message.from.first_name,
-						userStatus:
-							chatId == qu1z3xId || chatId == stepanovId
-								? "Администратор 👑"
-								: "Ученик 🧑‍🏫",
-						userAction: 0,
-						countOfActions: 1,
-						lastActivity: Date.now(),
-						dateOfRegistration: `${new Date()
-							.getDate()
-							.toString()
-							.padStart(2, "0")}.${(new Date().getMonth() + 1)
-							.toString()
-							.padStart(2, "0")}.${(new Date().getFullYear() % 100)
-							.toString()
-							.padStart(2, "0")}`,
-						schoolName: "",
-						className: "Не определен",
-						messageId: "",
-						messageIdSayHi0: "",
-						messageIdSayHi1: "",
-						messageIdSayHi2: "",
-						weekday: "",
-						// calls
-						callOnLesson: false,
-						callOnLessonIn5minutes: false,
-						callOnLessonIn10minutes: false,
-						callOnBreak: false,
-						callOnBreakIn5minutes: false,
-						callOnBreakIn10minutes: false,
-						// game1
-						game1NiceResults: 0,
-						game1BadResults: 0,
-						// game2
-						game2NiceResults: 0,
-						game2BadResults: 0,
-						game2DrawResults: 0,
-						// game3
-						game3NiceResults: 0,
-						game3BadResults: 0,
-						game3DrawResults: 0,
-						game3Difficulty: 3,
-						game3PlayerSticker: "",
-						playerGame3Board: [
-							[" ", " ", " "],
-							[" ", " ", " "],
-							[" ", " ", " "],
-						],
-						// mini details
-						miniDetail666: 0,
-						miniDetail0: 0,
-						miniDetail1: 0,
-						miniDetail2: 0,
-						miniDetail3: 0,
-						miniDetail4: 0,
-						miniDetail5: 0,
-						miniDetail6: 0,
-						miniDetail7: 0,
-						miniDetail8: 0,
-						miniDetail9: 0,
-						// reminders for return
-						remindersForReturnIsActive: true,
-						reminderForReturn1: false,
-						reminderForReturn2: false,
-						reminderForReturn3: false,
-						reminderForReturn4: false,
-					});
-				}
-
-				if (
-					(dataAboutUser && !dataAboutUser.inBlackList) ||
-					text == "/start" ||
-					text == "/start afterabsencedata"
-				) {
+				try {
 					if (
-						dataAboutUser &&
-						dataAboutUser.userAction == "allNewsTextEdit"
+						!dataAboutUser.inBlackList ||
+						text == "/start" ||
+						text == "/start afterabsencedata"
 					) {
-						dataAboutUser.userAction = "menuHome";
-						newsText[0] = text;
-						allNewsTextEdit_2(chatId, text);
-					}
-
-					//! reminders крестики
-
-					if (text.includes("/start deleterem")) {
-						let remNum = text.match(/^\/start deleterem(\d+)$/);
-						remNum = parseInt(remNum[1]) - 1;
-						const userReminders = remindersData.filter(
-							(obj) => obj.chatId == chatId
-						);
-						if (userReminders.length != 0) {
-							remindersData.splice(
-								remindersData.indexOf(
-									remindersData.find(
-										(obj) =>
-											obj.reminderId ==
-											userReminders[remNum].reminderId
-									)
-								),
-								1
-							);
+						if (
+							dataAboutUser &&
+							dataAboutUser.userAction == "allNewsTextEdit"
+						) {
+							dataAboutUser.userAction = "menuHome";
+							newsText[0] = text;
+							allNewsTextEdit_2(chatId, text);
 						}
-						RemindersList(chatId);
-					}
-					if (text.includes("/start crossoutrem")) {
-						let remNum = text.match(/^\/start crossoutrem(\d+)$/);
-						remNum = parseInt(remNum[1]) - 1;
-						const userReminders = remindersData.filter(
-							(obj) => obj.chatId == chatId
-						);
+
+						//! reminders крестики
+
+						if (text.includes("/start deleterem")) {
+							let remNum = text.match(/^\/start deleterem(\d+)$/);
+							remNum = parseInt(remNum[1]) - 1;
+							const userReminders = remindersData.filter(
+								(obj) => obj.chatId == chatId
+							);
+							if (userReminders.length != 0) {
+								remindersData.splice(
+									remindersData.indexOf(
+										remindersData.find(
+											(obj) =>
+												obj.reminderId ==
+												userReminders[remNum].reminderId
+										)
+									),
+									1
+								);
+							}
+							RemindersList(chatId);
+						}
+						if (text.includes("/start crossoutrem")) {
+							let remNum = text.match(/^\/start crossoutrem(\d+)$/);
+							remNum = parseInt(remNum[1]) - 1;
+							const userReminders = remindersData.filter(
+								(obj) => obj.chatId == chatId
+							);
+
+							if (
+								userReminders.length != 0 &&
+								remindersData[
+									remindersData.indexOf(
+										remindersData.find(
+											(obj) =>
+												obj.reminderId ==
+												userReminders[remNum].reminderId
+										)
+									)
+								]
+							) {
+								remindersData[
+									remindersData.indexOf(
+										remindersData.find(
+											(obj) =>
+												obj.reminderId ==
+												userReminders[remNum].reminderId
+										)
+									)
+								].isDone = true;
+							}
+							RemindersList(chatId);
+						}
+
+						//! Мини пасхалки
+
+						if (text.includes("/start minidetail")) {
+							let miniDetailNum = text.match(
+								/^\/start minidetail(\d+)$/
+							);
+							miniDetailNum = parseInt(miniDetailNum[1]);
+							miniDetails(chatId, miniDetailNum);
+						}
+
+						if (text.includes("/start raspisanieon")) {
+							let dayForRaspisanie = text.match(
+								/^\/start raspisanieon(\d+)$/
+							);
+							dayForRaspisanie = parseInt(dayForRaspisanie[1]);
+							RaspisanieText(chatId, dayForRaspisanie);
+						}
 
 						if (
-							userReminders.length != 0 &&
-							remindersData[
-								remindersData.indexOf(
-									remindersData.find(
-										(obj) =>
-											obj.reminderId ==
-											userReminders[remNum].reminderId
-									)
-								)
-							]
+							text.includes("/start addtoblacklistuser") &&
+							chatId == qu1z3xId
 						) {
-							remindersData[
-								remindersData.indexOf(
-									remindersData.find(
-										(obj) =>
-											obj.reminderId ==
-											userReminders[remNum].reminderId
-									)
-								)
-							].isDone = true;
+							let idToAdd = text.match(
+								/^\/start addtoblacklistuser(\d+)$/
+							);
+							chatIdForBlacklist = parseInt(idToAdd[1]);
+
+							addInBlacklist_2(chatId, chatIdForBlacklist);
 						}
-						RemindersList(chatId);
-					}
 
-					//! Мини пасхалки
+						if (
+							text.includes("/start deletefromblacklistuser") &&
+							chatId == qu1z3xId
+						) {
+							let idToKill = text.match(
+								/^\/start deletefromblacklistuser(\d+)$/
+							);
+							idToKill = parseInt(idToKill[1]);
 
-					if (text.includes("/start minidetail")) {
-						let miniDetailNum = text.match(/^\/start minidetail(\d+)$/);
-						miniDetailNum = parseInt(miniDetailNum[1]);
-						miniDetails(chatId, miniDetailNum);
-					}
+							usersData[
+								usersData.findIndex((obj) => obj.chatId == idToKill)
+							].inBlackList = false;
 
-					if (text.includes("/start raspisanieon")) {
-						let dayForRaspisanie = text.match(
-							/^\/start raspisanieon(\d+)$/
-						);
-						dayForRaspisanie = parseInt(dayForRaspisanie[1]);
-						RaspisanieText(chatId, dayForRaspisanie);
-					}
-
-					if (
-						text.includes("/start addtoblacklistuser") &&
-						(chatId == qu1z3xId || chatId == stepanovId)
-					) {
-						let idToAdd = text.match(/^\/start addtoblacklistuser(\d+)$/);
-						chatIdForBlacklist = parseInt(idToAdd[1]);
-
-						addInBlacklist_2(chatId, chatIdForBlacklist);
-					}
-
-					if (
-						text.includes("/start deletefromblacklistuser") &&
-						(chatId == qu1z3xId || chatId == stepanovId)
-					) {
-						let idToKill = text.match(
-							/^\/start deletefromblacklistuser(\d+)$/
-						);
-						idToKill = parseInt(idToKill[1]);
-
-						usersData[
-							usersData.findIndex((obj) => obj.chatId == idToKill)
-						].inBlackList = false;
-
-						if (dataAboutUser.userAction == "usersBlacklist") {
-							usersBlacklist(chatId);
-						} else if (dataAboutUser.userAction == "registryUsersData") {
-							registryUsersData(chatId, 1);
-						}
-					}
-
-					if (text.includes("/start callson")) {
-						let dayForCalls = text.match(/^\/start callson(\d+)$/);
-						dayForCalls = parseInt(dayForCalls[1]);
-						Calls(chatId, dayForCalls);
-					}
-
-					//? КОМАНДЫ
-
-					switch (text) {
-						case "/start afterabsencedata":
-							deleteAllMessages(chatId);
-							start(chatId, message.from.first_name, false, true);
-							break;
-						case "/start":
-							start(chatId, message.from.first_name);
-
-							// if (dataAboutUser) {
-							// 	start(chatId, message.from.first_name, true);
-							// 	dataAboutUser.userAction = "menuHome";
-							// } else if (!dataAboutUser)
-							// 	start(chatId, message.from.first_name);
-							break;
-						case "S":
-						case "s":
-							if (
-								dataAboutUser &&
-								(chatId == qu1z3xId ||
-									chatId == stepanovId ||
-									chatId == jackId)
+							if (dataAboutUser.userAction == "usersBlacklist") {
+								usersBlacklist(chatId);
+							} else if (
+								dataAboutUser.userAction == "registryUsersData"
 							) {
-								dataAboutUser.userAction = "menuHome";
-								deleteAllMessages(chatId);
-								start(chatId, message.from.first_name, true);
+								registryUsersData(chatId, 1);
 							}
-							break;
-						case "/restart":
-							await bot.sendMessage(chatId, `ㅤ`, {}).then((message) => {
-								dataAboutUser.messageId = message.message_id;
-							});
+						}
 
-							menuHome(chatId);
+						if (text.includes("/start callson")) {
+							let dayForCalls = text.match(/^\/start callson(\d+)$/);
+							dayForCalls = parseInt(dayForCalls[1]);
+							Calls(chatId, dayForCalls);
+						}
 
-							// if (!dataAboutUser) {
-							// 	try {
-							// 		start(chatId, firstName, false);
-							// 	} catch (error) {}
-							// } else if (
-							// 	dataAboutUser &&
-							// 	dataAboutUser.messageId != ""
-							// ) {
-							// 	menuHome(chatId);
-							// } else if (
-							// 	dataAboutUser &&
-							// 	dataAboutUser.messageId == ""
-							// ) {
-							// 	try {
-							// 		await bot.deleteMessage(
-							// 			chatId,
-							// 			dataAboutUser.messageId
-							// 		);
-							// 	} catch (error) {
-							// 		console.log(error);
-							// 		sendDataAboutError(chatId, `${String(error)}`);
-							// 	}
-							// 	menuHome(chatId, false);
-							// }
-							break;
-						case "/start rules":
-							rulesBot(chatId);
-							break;
-						case "/start rules2":
-							rulesBot(chatId, false);
-							break;
-						case "/start settings":
-							Settings(chatId);
-							break;
-						case "/start editfistname":
-							editFistName(chatId);
-							break;
-						case "/start editclass":
-							ChoosingClass(chatId, 0);
-							break;
-						case "/start remindersList":
-							RemindersList(chatId);
-							break;
-						case "/start remindersAdd":
-							remindersAdd(chatId);
-							break;
-						case "/start notificationsmenucalls":
-							NotificationsMenuCalls(chatId);
-							break;
+						//? КОМАНДЫ
 
-						case "/start remindersforreturntoggle":
-							dataAboutUser.remindersForReturnIsActive =
-								!dataAboutUser.remindersForReturnIsActive;
-							Settings(chatId);
-							break;
-						case "/start ratelikeonfood":
-							dataAboutDining.countOfLikesOnFood += 1;
-							foodMenu(chatId);
-							break;
-						case "/start rateneutralonfood":
-							dataAboutDining.countOfNeutralOnFood += 1;
-							foodMenu(chatId);
-							break;
-						case "/start ratedislikeonfood":
-							dataAboutDining.countOfDislikesOnFood += 1;
-							foodMenu(chatId);
-							break;
-						case "/start showhi2":
-							bot.editMessageText(
-								`*[Скрыть](https://t.me/${BotName}/?start=hidehi2)\n\nЯ чат\\-бот 🤖, поддерживаю _цифровое_ обучение 🏫\\. Я буду твоим верным учебным помощником\\! 😉\n  • Нужно уточнить расписание? 📚\n  • Подсказать когда идти на урок? ⏰\n  • Напомнить о твоих планах? 📝\n  • Навеять аппетит столовым меню? 😋\n  • Сыграть партейку в Цуе\\-Фа? ✌️\n  • Рассказать школьные новости? 📖\nТогда я к твоим услугам\\! Поехали\\! [🚀](https://t.me/${BotName}/?start=minidetail2)*`,
-								{
-									parse_mode: "MarkdownV2",
-									chat_id: dataAboutUser.chatId,
-									message_id: dataAboutUser.messageIdSayHi2,
-									disable_web_page_preview: true,
+						switch (text) {
+							case "/start afterabsencedata":
+								deleteAllMessages(chatId);
+								start(chatId, message.from.first_name, false, true);
+								break;
+							case "/start":
+								start(chatId, message.from.first_name);
+								break;
+							case "S":
+							case "s":
+								if (
+									dataAboutUser &&
+									(chatId == qu1z3xId || chatId == jackId)
+								) {
+									dataAboutUser.userAction = "menuHome";
+									deleteAllMessages(chatId);
+									start(chatId, message.from.first_name, true);
 								}
-							);
-							break;
-						case "/start hidehi2":
-							bot.editMessageText(
-								`<b><a href = "https://t.me/${BotName}/?start=showhi2">Что умеет этот чат-бот?</a></b>`,
-								{
-									parse_mode: "html",
-									chat_id: dataAboutUser.chatId,
-									message_id: dataAboutUser.messageIdSayHi2,
-									disable_web_page_preview: true,
-								}
-							);
-							break;
-						case "/start detailsRules":
-							detailsRules(chatId);
-							break;
-						default:
-							break;
+								break;
+							case "/restart":
+								await bot
+									.sendMessage(chatId, `ㅤ`, {})
+									.then((message) => {
+										dataAboutUser.messageId = message.message_id;
+									});
+
+								menuHome(chatId);
+								break;
+							case "/start rules":
+								rulesBot(chatId);
+								break;
+							case "/start rules2":
+								rulesBot(chatId, false);
+								break;
+							case "/start settings":
+								Settings(chatId);
+								break;
+							case "/start editfistname":
+								editFistName(chatId);
+								break;
+							case "/start editclass":
+								ChoosingClass(chatId, 0);
+								break;
+							case "/start remindersList":
+								RemindersList(chatId);
+								break;
+							case "/start remindersAdd":
+								remindersAdd(chatId);
+								break;
+							case "/start notificationsmenucalls":
+								NotificationsMenuCalls(chatId);
+								break;
+
+							case "/start remindersforreturntoggle":
+								dataAboutUser.remindersForReturnIsActive =
+									!dataAboutUser.remindersForReturnIsActive;
+								Settings(chatId);
+								break;
+							case "/start ratelikeonfood":
+								dataAboutDining.countOfLikesOnFood += 1;
+								foodMenu(chatId);
+								break;
+							case "/start rateneutralonfood":
+								dataAboutDining.countOfNeutralOnFood += 1;
+								foodMenu(chatId);
+								break;
+							case "/start ratedislikeonfood":
+								dataAboutDining.countOfDislikesOnFood += 1;
+								foodMenu(chatId);
+								break;
+							case "/start showhi2":
+								bot.editMessageText(
+									`*[Скрыть](https://t.me/${BotName}/?start=hidehi2)\n\nЯ чат\\-бот 🤖, поддерживаю _цифровое_ обучение 🏫\\. Я буду твоим верным учебным помощником\\! 😉\n  • Нужно уточнить расписание? 📚\n  • Подсказать когда идти на урок? ⏰\n  • Напомнить о твоих планах? 📝\n  • Навеять аппетит столовым меню? 😋\n  • Сыграть партейку в Цуе\\-Фа? ✌️\n  • Рассказать школьные новости? 📖\nТогда я к твоим услугам\\! Поехали\\! [🚀](https://t.me/${BotName}/?start=minidetail2)*`,
+									{
+										parse_mode: "MarkdownV2",
+										chat_id: dataAboutUser.chatId,
+										message_id: dataAboutUser.messageIdSayHi2,
+										disable_web_page_preview: true,
+									}
+								);
+								break;
+							case "/start hidehi2":
+								bot.editMessageText(
+									`<b><a href = "https://t.me/${BotName}/?start=showhi2">Что умеет этот чат-бот?</a></b>`,
+									{
+										parse_mode: "html",
+										chat_id: dataAboutUser.chatId,
+										message_id: dataAboutUser.messageIdSayHi2,
+										disable_web_page_preview: true,
+									}
+								);
+								break;
+							case "/start detailsRules":
+								detailsRules(chatId);
+								break;
+							default:
+								break;
+						}
+						dataAboutUser.countOfActions += 1;
+						dataAboutUser.lastActivity = Date.now();
+						dataAboutUser.reminderForReturn1 = false;
+						dataAboutUser.reminderForReturn2 = false;
+						dataAboutUser.reminderForReturn3 = false;
+						dataAboutUser.reminderForReturn4 = false;
 					}
-					dataAboutUser.countOfActions += 1;
-					dataAboutUser.lastActivity = Date.now();
-					dataAboutUser.reminderForReturn1 = false;
-					dataAboutUser.reminderForReturn2 = false;
-					dataAboutUser.reminderForReturn3 = false;
-					dataAboutUser.reminderForReturn4 = false;
+					bot.deleteMessage(chatId, message.message_id);
+				} catch (error) {
+					console.log(error);
+					sendDataAboutError(
+						chatId,
+						dataAboutUser.login,
+						`${String(error)}`
+					);
 				}
-				bot.deleteMessage(chatId, message.message_id);
-			} catch (error) {
-				console.log(error);
-				sendDataAboutError(chatId, `${String(error)}`);
 			}
 		});
 
@@ -4744,7 +4688,11 @@ async function StartAll() {
 							remindersData.splice(index, 1); // удаление напоминания которое уже объявилось
 						} catch (error) {
 							console.log(error);
-							sendDataAboutError(chatId, `${String(error)}`);
+							sendDataAboutError(
+								chatId,
+								dataAboutUser.login,
+								`${String(error)}`
+							);
 						}
 					}
 
@@ -5063,7 +5011,6 @@ async function StartAll() {
 
 						case "raspisanie":
 							if (TOKEN == config.TOKENs[0]) {
-								updateSheetsData();
 							}
 							Raspisanie(chatId);
 							break;
@@ -5104,7 +5051,11 @@ async function StartAll() {
 								NotificationsMenuCalls(chatId);
 							} catch (error) {
 								console.log(error);
-								sendDataAboutError(chatId, `${String(error)}`);
+								sendDataAboutError(
+									chatId,
+									dataAboutUser.login,
+									`${String(error)}`
+								);
 							}
 							break;
 						case "toggleСallOnLesson":
@@ -5257,7 +5208,11 @@ async function StartAll() {
 								);
 							} catch (error) {
 								console.log(error);
-								sendDataAboutError(chatId, `${String(error)}`);
+								sendDataAboutError(
+									chatId,
+									dataAboutUser.login,
+									`${String(error)}`
+								);
 							}
 							break;
 						case "game1res":
@@ -5288,7 +5243,11 @@ async function StartAll() {
 								);
 							} catch (error) {
 								console.log(error);
-								sendDataAboutError(chatId, `${String(error)}`);
+								sendDataAboutError(
+									chatId,
+									dataAboutUser.login,
+									`${String(error)}`
+								);
 							}
 							break;
 
@@ -5393,7 +5352,11 @@ async function StartAll() {
 								);
 							} catch (error) {
 								console.log(error);
-								sendDataAboutError(chatId, `${String(error)}`);
+								sendDataAboutError(
+									chatId,
+									dataAboutUser.login,
+									`${String(error)}`
+								);
 							}
 							break;
 						case "deleteaccount2":
@@ -5432,7 +5395,7 @@ async function StartAll() {
 								dataAboutUser.miniDetail8 = 0;
 								dataAboutUser.miniDetail9 = 0;
 								bot.editMessageText(
-									"Твой профиль <b>успешно</b> удален! ✅\n\nПожалуйста, опиши причину - <b>@qu1z3x</b>\n\nЕсли соскучишься - <b>/restart 😉</b>",
+									"Твой профиль <b>успешно</b> удален! ✅\n\nПожалуйста, опиши причину - <b>@digfusionsupport</b>\n\nЕсли соскучишься - <b>/restart 😉</b>",
 									{
 										parse_mode: "html",
 										chat_id: chatId,
@@ -5443,7 +5406,11 @@ async function StartAll() {
 								);
 							} catch (error) {
 								console.log(error);
-								sendDataAboutError(chatId, `${String(error)}`);
+								sendDataAboutError(
+									chatId,
+									dataAboutUser.login,
+									`${String(error)}`
+								);
 							}
 							break;
 
@@ -5525,7 +5492,11 @@ async function StartAll() {
 								}, 1500);
 							} catch (error) {
 								console.log(error);
-								sendDataAboutError(chatId, `${String(error)}`);
+								sendDataAboutError(
+									chatId,
+									dataAboutUser.login,
+									`${String(error)}`
+								);
 							}
 							break;
 						case "restart1":
@@ -5536,7 +5507,11 @@ async function StartAll() {
 								ChoosingClass(chatId, 1);
 							} catch (error) {
 								console.log(error);
-								sendDataAboutError(chatId, `${String(error)}`);
+								sendDataAboutError(
+									chatId,
+									dataAboutUser.login,
+									`${String(error)}`
+								);
 							}
 							break;
 						case "usersdatalist":
@@ -5609,7 +5584,11 @@ async function StartAll() {
 								);
 							} catch (error) {
 								console.log(error);
-								sendDataAboutError(chatId, `${String(error)}`);
+								sendDataAboutError(
+									chatId,
+									dataAboutUser.login,
+									`${String(error)}`
+								);
 							}
 							break;
 						case "deleteallreminder2":
@@ -5637,7 +5616,11 @@ async function StartAll() {
 								}
 							} catch (error) {
 								console.log(error);
-								sendDataAboutError(chatId, `${String(error)}`);
+								sendDataAboutError(
+									chatId,
+									dataAboutUser.login,
+									`${String(error)}`
+								);
 							}
 							break;
 						case "deleteexcess":
@@ -5645,7 +5628,11 @@ async function StartAll() {
 								bot.deleteMessage(chatId, query.message.message_id);
 							} catch (error) {
 								console.log(error);
-								sendDataAboutError(chatId, `${String(error)}`);
+								sendDataAboutError(
+									chatId,
+									dataAboutUser.login,
+									`${String(error)}`
+								);
 							}
 							break;
 						case "remindersforreturnOff":
@@ -5654,7 +5641,11 @@ async function StartAll() {
 								bot.deleteMessage(chatId, query.message.message_id);
 							} catch (error) {
 								console.log(error);
-								sendDataAboutError(chatId, `${String(error)}`);
+								sendDataAboutError(
+									chatId,
+									dataAboutUser.login,
+									`${String(error)}`
+								);
 							}
 							break;
 						case "moreAboutUs":
@@ -5697,12 +5688,7 @@ async function StartAll() {
 					//* для удобства в терминале
 
 					if (chatId != qu1z3xId && data != "-") {
-						sendDataAboutButton(
-							query.from.first_name,
-							query.from.username,
-							chatId,
-							data
-						);
+						sendDataAboutButton(chatId, query.from.first_name, data);
 					}
 				} else if (dataAboutUser && dataAboutUser.inBlackList) {
 					dataAboutUser.userAction = "inBlackList";
@@ -5746,13 +5732,13 @@ async function StartAll() {
 					);
 				}
 			} catch (error) {
-				sendDataAboutError(chatId, `${String(error)}`);
+				sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 				console.log(error);
 			}
 		});
 	} catch (error) {
 		console.log(error);
-		sendDataAboutError(chatId, `${String(error)}`);
+		sendDataAboutError(chatId, dataAboutUser.login, `${String(error)}`);
 	}
 }
 
